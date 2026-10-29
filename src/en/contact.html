@@ -1,0 +1,48 @@
+<!--
+title: Contact us | Auction Italy
+description: Contact Auction Italy for assistance with court property auctions in Fermo, Marche. Free first email consultation, English-speaking support, WhatsApp available.
+-->
+<div class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Contact</p>
+    <h1>Let's talk about your Italian home</h1>
+    <p class="lead">Send us a property you like, or simply tell us what you are looking for. A short first consultation by email is free and we reply in English.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap grid-2" style="align-items:start">
+    <form class="form box" name="contact-en" method="POST" data-netlify="true" netlify-honeypot="company" action="/thanks/">
+      <input type="hidden" name="form-name" value="contact-en">
+      <p class="hidden-field"><label>Do not fill this in <input name="company"></label></p>
+      <label>Name <input name="name" autocomplete="name" required></label>
+      <label>Email <input type="email" name="email" autocomplete="email" required></label>
+      <label>What are you looking for?
+        <select name="interest">
+          <option>A specific property I found</option>
+          <option>Seaside home</option>
+          <option>Village or historic house</option>
+          <option>Country house or farmhouse</option>
+          <option>Mountain home</option>
+          <option>Not sure yet</option>
+        </select>
+      </label>
+      <label>Message <textarea name="message" rows="6" required placeholder="Link or address of the property, your budget, your questions…"></textarea></label>
+      <label class="check"><input type="checkbox" name="privacy" required> I agree that my data will be used only to answer my request.</label>
+      <button class="btn" type="submit">Send message</button>
+    </form>
+    <div>
+      <div class="box" style="margin-bottom:20px">
+        <h3>WhatsApp</h3>
+        <p>The fastest way to reach us.</p>
+        <p><a class="btn" href="{{WHATSAPP}}">Chat on WhatsApp</a></p>
+        <p style="margin:0;color:var(--ink-soft)">{{PHONE}}</p>
+      </div>
+      <div class="box">
+        <h3>Meetings</h3>
+        <p>We meet by video call or at our office in the province of Fermo, by appointment.</p>
+        <p style="margin:0"><a href="/prices/">See our prices →</a></p>
+      </div>
+    </div>
+  </div>
+</section>

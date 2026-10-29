@@ -1,0 +1,48 @@
+<!--
+title: Contatti | Auction Italy
+description: Contatta Auction Italy per assistenza alle aste immobiliari del Tribunale di Fermo. Prima consulenza via email gratuita, disponibili anche su WhatsApp.
+-->
+<div class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Contatti</p>
+    <h1>Parliamo della tua prossima casa</h1>
+    <p class="lead">Mandaci un immobile che ti interessa o raccontaci cosa cerchi. Una prima breve consulenza via email è gratuita.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap grid-2" style="align-items:start">
+    <form class="form box" name="contact-it" method="POST" data-netlify="true" netlify-honeypot="company" action="/it/thanks/">
+      <input type="hidden" name="form-name" value="contact-it">
+      <p class="hidden-field"><label>Non compilare <input name="company"></label></p>
+      <label>Nome <input name="name" autocomplete="name" required></label>
+      <label>Email <input type="email" name="email" autocomplete="email" required></label>
+      <label>Cosa cerchi?
+        <select name="interest">
+          <option>Un immobile preciso che ho trovato</option>
+          <option>Casa al mare</option>
+          <option>Casa in un borgo o centro storico</option>
+          <option>Casa di campagna o casale</option>
+          <option>Casa in montagna</option>
+          <option>Non lo so ancora</option>
+        </select>
+      </label>
+      <label>Messaggio <textarea name="message" rows="6" required placeholder="Link o indirizzo dell'immobile, budget, domande…"></textarea></label>
+      <label class="check"><input type="checkbox" name="privacy" required> Acconsento all'uso dei miei dati solo per rispondere alla mia richiesta.</label>
+      <button class="btn" type="submit">Invia messaggio</button>
+    </form>
+    <div>
+      <div class="box" style="margin-bottom:20px">
+        <h3>WhatsApp</h3>
+        <p>Il modo più veloce per raggiungerci.</p>
+        <p><a class="btn" href="{{WHATSAPP}}">Scrivici su WhatsApp</a></p>
+        <p style="margin:0;color:var(--ink-soft)">{{PHONE}}</p>
+      </div>
+      <div class="box">
+        <h3>Appuntamenti</h3>
+        <p>Ci incontriamo in videochiamata o in studio, in provincia di Fermo, su appuntamento.</p>
+        <p style="margin:0"><a href="/it/prices/">Vedi i prezzi →</a></p>
+      </div>
+    </div>
+  </div>
+</section>
