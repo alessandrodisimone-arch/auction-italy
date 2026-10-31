@@ -16,3 +16,9 @@ document.querySelectorAll(".chip[data-filter]").forEach((chip) => {
     });
   });
 });
+
+// Hide open auctions whose date has passed (the site may not have been rebuilt yet)
+const today = new Date().toISOString().slice(0, 10);
+document.querySelectorAll(".card[data-until]").forEach((card) => {
+  if (card.dataset.until < today) card.remove();
+});
