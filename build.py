@@ -11,6 +11,7 @@ filled in from data/properties.json.
 """
 import json
 import re
+from datetime import date, datetime
 import shutil
 from html import escape
 from pathlib import Path
@@ -27,7 +28,7 @@ PAGES = ["", "how-it-works", "available-auctions", "prices", "faq", "about-provi
 T = {
     "en": {
         "prefix": "",
-        "nav": {"how-it-works": "How it works", "available-auctions": "Auction examples", "prices": "Prices",
+        "nav": {"how-it-works": "How it works", "available-auctions": "Auctions", "prices": "Prices",
                 "faq": "FAQ", "about-province-of-fermo": "Province of Fermo", "contact": "Contact"},
         "tagline": "Court property auctions in Fermo, Marche",
         "cta": "Talk to us",
@@ -40,10 +41,15 @@ T = {
                  "modern": "Modern homes", "heritage": "Heritage homes", "fixer": "Fixer-uppers"},
         "bid": "Winning offer level", "value": "Court valuation", "below": "below valuation", "past": "Past auction",
         "all": "All",
+        "open": "Open auction", "auction_on": "Auction on", "base": "Base price", "min_offer": "Minimum offer",
+        "official": "Official listing", "ask": "Ask us about it",
+        "ask_text": "Hello, I am interested in the auction in {town} ({title}) on {date}",
+        "no_open": "We are selecting the next auctions worth a look. In the meantime, send us any auction you like and we will give you our honest opinion.",
+        "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     },
     "it": {
         "prefix": "/it",
-        "nav": {"how-it-works": "Come funziona", "available-auctions": "Esempi di aste", "prices": "Prezzi",
+        "nav": {"how-it-works": "Come funziona", "available-auctions": "Aste", "prices": "Prezzi",
                 "faq": "Domande", "about-province-of-fermo": "Provincia di Fermo", "contact": "Contatti"},
         "tagline": "Aste immobiliari giudiziarie a Fermo, Marche",
         "cta": "Contattaci",
@@ -56,6 +62,11 @@ T = {
                  "modern": "Case moderne", "heritage": "Dimore di pregio", "fixer": "Da ristrutturare"},
         "bid": "Offerta in asta", "value": "Valore di perizia", "below": "sotto la perizia", "past": "Asta passata",
         "all": "Tutte",
+        "open": "Asta aperta", "auction_on": "Asta il", "base": "Prezzo base", "min_offer": "Offerta minima",
+        "official": "Annuncio ufficiale", "ask": "Chiedici un parere",
+        "ask_text": "Ciao, mi interessa l'asta a {town} ({title}) del {date}",
+        "no_open": "Stiamo selezionando le prossime aste che meritano. Nel frattempo mandaci le aste che ti piacciono e ti diamo un parere sincero.",
+        "months": ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"],
     },
 }
 
@@ -73,6 +84,63 @@ def wa_link(lang):
 def euro(n, lang):
     s = f"{round(n):,}"
     return "€ " + (s.replace(",", ".") if lang == "it" else s)
+
+
+def nice_date(d, lang):
+    m = T[lang]["months"][d.month - 1]
+    return f"{d.day} {m} {d.year}"
+
+
+def auction_date(a):
+    return datetime.strptime(a["date"][:10], "%Y-%m-%d").date()
+
+
+def open_auctions(auctions, today=None):
+    """Auctions selected by hand in data/auctions.json whose date is today or later."""
+    today = today or date.today()
+    return sorted((a for a in auctions if auction_date(a) >= today), key=auction_date)
+
+
+def auction_card(a, lang):
+    from urllib.parse import quote
+    t = T[lang]
+    d = auction_date(a)
+    when = nice_date(d, lang) + (f", {a['date'][11:16]}" if len(a["date"]) > 10 else "")
+    title = a["title"][lang]
+    ask = t["ask_text"].format(town=a["town"], title=title, date=nice_date(d, lang))
+    if a.get("image"):
+        img = f'<img src="{a["image"]}" alt="{escape(title)} – {escape(a["town"])}" loading="lazy" width="800" height="560">'
+    else:
+        img = f'<div class="card-noimg" aria-hidden="true"><span>{escape(a["town"])}</span></div>'
+    prices = f'<div><dt>{t["base"]}</dt><dd>{euro(a["base_price"], lang)}</dd></div>'
+    if a.get("min_offer"):
+        prices += f'<div><dt>{t["min_offer"]}</dt><dd>{euro(a["min_offer"], lang)}</dd></div>'
+    return f"""
+    <article class="card card-open" data-cat="{a['category']}" data-until="{d.isoformat()}">
+      <div class="card-img">
+        {img}
+        <span class="badge badge-open">{t['open']}</span>
+      </div>
+      <div class="card-body">
+        <p class="card-kicker">{escape(a['town'])} · {t['cats'][a['category']]}</p>
+        <h3>{escape(title)}</h3>
+        <p class="card-size">{escape(a.get('size', ''))}</p>
+        <p class="card-text">{escape(a['features'][lang])}</p>
+        <p class="card-date">{t['auction_on']} <strong>{when}</strong></p>
+        <dl class="card-prices">{prices}</dl>
+        <div class="card-actions">
+          <a class="btn btn-small" href="https://wa.me/{WHATSAPP}?text={quote(ask)}">{t['ask']}</a>
+          <a class="btn btn-small btn-ghost" href="{escape(a['link'])}" rel="noopener" target="_blank">{t['official']}</a>
+        </div>
+      </div>
+    </article>"""
+
+
+def render_open(auctions, lang):
+    items = open_auctions(auctions)
+    if not items:
+        return f'<div class="callout"><p>{T[lang]["no_open"]}</p></div>'
+    return '<div class="cards">' + "".join(auction_card(a, lang) for a in items) + "</div>"
 
 
 def property_card(p, lang):
@@ -217,6 +285,7 @@ def layout(lang, slug, meta, body):
 
 def main():
     props = json.loads((ROOT / "data/properties.json").read_text(encoding="utf-8"))
+    auctions = json.loads((ROOT / "data/auctions.json").read_text(encoding="utf-8"))
     if OUT.exists():
         shutil.rmtree(OUT)
     shutil.copytree(ROOT / "static", OUT)
@@ -224,7 +293,8 @@ def main():
     for lang in ("en", "it"):
         for slug in PAGES + ["thanks"]:
             meta, body = parse_page(ROOT / "src" / lang / f"{slug or 'index'}.html")
-            body = (body.replace("{{EXAMPLES_TOP}}", render_examples(props, lang, 3))
+            body = (body.replace("{{OPEN_AUCTIONS}}", render_open(auctions, lang))
+                        .replace("{{EXAMPLES_TOP}}", render_examples(props, lang, 3))
                         .replace("{{EXAMPLES}}", render_examples(props, lang))
                         .replace("{{FILTERS}}", render_filters(props, lang))
                         .replace("{{WHATSAPP}}", wa_link(lang))
