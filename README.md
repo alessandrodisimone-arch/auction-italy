@@ -4,7 +4,7 @@ Sito di [auction-italy.com](https://www.auction-italy.com): assistenza alle aste
 
 ## Struttura
 
-- `src/en/`, `src/it/`: contenuto delle pagine (una per file, stesso nome nelle due lingue)
+- `src/en/`, `src/it/`: contenuto delle pagine (una per file, stesso nome nelle due lingue). L'italiano è pubblicato nella radice del sito, l'inglese sotto `/en/`
 - `data/properties.json`: esempi di aste mostrati nelle schede
 - `static/`: CSS, JavaScript, immagini, `_redirects`
 - `build.py`: genera il sito in `public/` (solo Python 3, nessuna dipendenza)

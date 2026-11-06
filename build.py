@@ -60,8 +60,12 @@ T = {
 }
 
 
+# Italian is the default language at the site root, English lives under /en/.
+URL_PREFIX = {"it": "", "en": "/en"}
+
+
 def url(lang, slug):
-    base = T[lang]["prefix"]
+    base = URL_PREFIX[lang]
     return f"{base}/{slug}/" if slug else (f"{base}/" if base else "/")
 
 
@@ -113,6 +117,17 @@ def render_filters(props, lang):
     return '<div class="chips" role="toolbar">' + "".join(btns) + "</div>"
 
 
+def localize_links(body, lang):
+    """Page sources link to /... (en) and /it/... (it): map them to the real URL prefixes."""
+    src_prefix = T[lang]["prefix"]
+    def fix(m):
+        path = m.group(2)
+        if src_prefix and path.startswith(src_prefix + "/"):
+            path = path[len(src_prefix):]
+        return f'{m.group(1)}="{URL_PREFIX[lang]}{path}"'
+    return re.sub(r'(href|action)="(/[^"]*)"', fix, body)
+
+
 def parse_page(path):
     text = path.read_text(encoding="utf-8")
     m = re.match(r"\s*<!--(.*?)-->", text, re.S)
@@ -153,7 +168,7 @@ def layout(lang, slug, meta, body):
 <link rel="canonical" href="{canonical}">
 <link rel="alternate" hreflang="en" href="{SITE_URL + url('en', slug)}">
 <link rel="alternate" hreflang="it" href="{SITE_URL + url('it', slug)}">
-<link rel="alternate" hreflang="x-default" href="{SITE_URL + url('en', slug)}">
+<link rel="alternate" hreflang="x-default" href="{SITE_URL + url('it', slug)}">
 <meta property="og:type" content="website">
 <meta property="og:title" content="{escape(meta['title'])}">
 <meta property="og:description" content="{escape(meta['description'])}">
@@ -224,6 +239,7 @@ def main():
     for lang in ("en", "it"):
         for slug in PAGES + ["thanks"]:
             meta, body = parse_page(ROOT / "src" / lang / f"{slug or 'index'}.html")
+            body = localize_links(body, lang)
             body = (body.replace("{{EXAMPLES_TOP}}", render_examples(props, lang, 3))
                         .replace("{{EXAMPLES}}", render_examples(props, lang))
                         .replace("{{FILTERS}}", render_filters(props, lang))
