@@ -4,7 +4,7 @@ Sito di [auction-italy.com](https://www.auction-italy.com): assistenza alle aste
 
 ## Struttura
 
-- `src/en/`, `src/it/`: contenuto delle pagine (una per file, stesso nome nelle due lingue)
+- `src/en/`, `src/it/`: contenuto delle pagine (una per file, stesso nome nelle due lingue). L'italiano è pubblicato nella radice del sito, l'inglese sotto `/en/`
 - `data/properties.json`: esempi di aste passate mostrati nelle schede
 - `data/auctions.json`: aste aperte scelte a mano (vetrina). Campi: `id`, `category` (seaside, countryside, mountain, historic, modern, heritage, fixer), `town`, `title` {en, it}, `size`, `base_price`, `min_offer` (facoltativo), `date` (`AAAA-MM-GG` o `AAAA-MM-GGTHH:MM`), `features` {en, it}, `link` (annuncio ufficiale), `image` (facoltativo, solo foto con diritti d'uso). Le aste con data passata non vengono mostrate.
 - `static/`: CSS, JavaScript, immagini, `_redirects`
